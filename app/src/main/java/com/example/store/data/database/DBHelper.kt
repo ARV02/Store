@@ -1,5 +1,6 @@
 package com.example.store.data.database
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -11,8 +12,10 @@ import com.example.store.constants.Constants.Companion.IMAGE_COL
 import com.example.store.constants.Constants.Companion.PRICE_COL
 import com.example.store.constants.Constants.Companion.TABLE_NAME
 import com.example.store.constants.Constants.Companion.TITLE_COL
+import com.example.store.data.model.ProductsResponse
+import dagger.hilt.android.qualifiers.ApplicationContext
 
-class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
+class DBHelper(@ApplicationContext context: Context, factory: SQLiteDatabase.CursorFactory?):
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -30,7 +33,18 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?):
         onCreate(db)
     }
 
-    fun addProduct(title: String, image: String, description: String, price: Double) {
+    fun addProduct(product: ProductsResponse) {
+        val values = ContentValues()
 
+        values.put(TITLE_COL, product.title)
+        values.put(IMAGE_COL, product.image)
+        values.put(DESCRIPTION_COL, product.description)
+        values.put(PRICE_COL, product.price)
+
+        val db = this.writableDatabase
+
+        db.insert(TABLE_NAME, null, values)
+
+        db.close()
     }
 }
